@@ -1,0 +1,111 @@
+__author__ = "KoyazovKA"
+
+from analyzator import *
+
+IND_AND_CHARS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
+                 '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
+
+def execute_rule1(string):
+	print(f"Правило 1: X")
+	return "X"
+
+def execute_rule2(string, start_str):
+	string = string.replace("X+X", "X", 1)
+	print(f"Правило 2: {start_str}{string}")
+	return string
+
+
+def execute_rule4(string, start_str):
+	string = string.replace("X*X", "X", 1)
+	print(f"Правило 4: {start_str}{string}")
+	return string
+
+
+def execute_rule5(string, start_str):
+	string = string.replace("X/X", "X", 1)
+	print(f"Правило 5: {start_str}{string}")
+	return string
+
+
+def execute_rule7(string, start_str):
+	string = string.replace("(X)", "X", 1)
+	print(f"Правило 7: {start_str}{string}")
+	return string
+
+
+def execute_rule8(string, start_str):
+	string = string.replace("-X", "X", 1)
+	print(f"Правило 8: {start_str}{string}")
+	return string
+
+
+def execute_rule9(string, start_str, i):
+	string = string.replace(i, "X", 1)
+	print(f"Правило 9: {start_str}{string}")
+	return string
+
+def find_numb(string):
+	result = ""
+	for i in range(len(string)):
+		if string[i] in IND_AND_CHARS:
+			result += string[i]
+			# Проверяем следующий символ, пока он также является элементом IND_AND_CHARS
+			j = i + 1
+			while j < len(string) and string[j] in IND_AND_CHARS:
+				result += string[j]
+				j += 1
+			break  # Выходим из внешнего цикла, так как мы нашли последовательность
+	return result
+
+def find_and_replace(string, start_str):
+	i = find_numb(string)
+	string = execute_rule9(string, start_str, i)
+	return string
+
+def analis(string, start_str):
+	while string != "X":
+		if "X+X" in string:
+			string = execute_rule2(string, start_str)
+		elif "X*X" in string:
+			string = execute_rule4(string, start_str)
+		elif "X/X" in string:
+			string = execute_rule5(string, start_str)
+		elif "(X)" in string:
+			string = execute_rule7(string, start_str)
+		elif "-X" in string:
+			string = execute_rule8(string, start_str)
+		else:
+			string = find_and_replace(string, start_str)
+	return string
+
+
+def read_file_and_fill_variable(filename):
+	try:
+		with open(filename, 'r') as file:
+			file_content = file.read()
+			return file_content
+	except FileNotFoundError:
+		print(f"Файл {filename} не найден.")
+	except Exception as e:
+		print(f"Произошла ошибка при чтении файла: {e}")
+
+def main():
+	file_name = "WithoutErrors.txt"  # Укажите имя вашего файла
+	input_str = read_file_and_fill_variable(file_name)
+	input_str = input_str.replace(" ", "")
+	start_str = input_str[:3]
+	body = input_str[3:-1]
+	reader = Reader(file_name)
+	lecs = Analyzator(reader.lines)
+	if len(lecs.err_message) == 0:
+		print(f"\n\nСинтаксический анализатор\nИсходная строка: {input_str}")
+		body = analis(body, start_str)
+
+		start_str += body
+		execute_rule1(start_str)
+
+
+if __name__ == '__main__':
+	main()
