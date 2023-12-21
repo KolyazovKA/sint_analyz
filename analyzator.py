@@ -243,14 +243,16 @@ class Analyzator:
 			for j in range(len(self.input_data[i + 1])):
 				var = re.split(" ", self.input_data[i + 1][j])
 				for char in var:
-					if char[0] == "{" or char[0] in self.vars_of_str:
-						continue
-					if not char[0].isalpha() and not char[0] == "_":
-						# self.broken_vars.append(char)
-						# self.err_message.append(f"Ошибка в наименовании переменной {char} "
-						#       f"на строке {i + 1} в выражении {j + 1}\n")
-						continue
-
+					try:
+						if char[0] == "{" or char[0] in self.vars_of_str:
+							continue
+						if not char[0].isalpha() and not char[0] == "_":
+							# self.broken_vars.append(char)
+							# self.err_message.append(f"Ошибка в наименовании переменной {char} "
+							#       f"на строке {i + 1} в выражении {j + 1}\n")
+							continue
+					except:
+						print("Синтаксическая ошибка")
 					self.append_var(char)
 		self.sort_vars()
 

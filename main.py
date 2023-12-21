@@ -74,7 +74,10 @@ def find_and_replace(string, start_str):
 	return string
 
 def analis(string, start_str):
+	x = 0
+	flag = False
 	while string != "X":
+		x += 1
 		if "X+X" in string:
 			string = execute_rule2(string, start_str)
 		elif "X*X" in string:
@@ -85,9 +88,25 @@ def analis(string, start_str):
 			string = execute_rule7(string, start_str)
 		elif "-X" in string:
 			string = execute_rule8(string, start_str)
+		elif "XX" in string:
+			flag = True
+			print(f"Синтаксическая ошибка на {x} шаге")
+			break
+		elif "X+)" in string:
+			flag = True
+			print(f"Синтаксическая ошибка на {x} шаге")
+			break
+		elif "X*)" in string:
+			flag = True
+			print(f"Синтаксическая ошибка на {x} шаге")
+			break
+		elif "X/)" in string:
+			flag = True
+			print(f"Синтаксическая ошибка на {x} шаге")
+			break
 		else:
 			string = find_and_replace(string, start_str)
-	return string
+	return string, flag
 
 
 def read_file_and_fill_variable(filename):
@@ -110,14 +129,16 @@ def main():
 	lecs = Analyzator(reader.lines)
 	if len(lecs.err_message) == 0:
 		print(f"\n\nСинтаксический анализатор\nИсходная строка: {input_str}")
-		body = analis(body, start_str)
-
-		start_str += body
-		execute_rule1(start_str)
-		print("Список применнных правил")
-		for i in list_rules:
-			print(i, end="->")
-		print('end')
+		body, flag = analis(body, start_str)
+		if not flag:
+			start_str += body
+			execute_rule1(start_str)
+			print("Список применнных правил")
+			for i in list_rules:
+				print(i, end="->")
+			print('end')
+		else:
+			print("Программа завершилась с ошибкой")
 
 if __name__ == '__main__':
 	main()
